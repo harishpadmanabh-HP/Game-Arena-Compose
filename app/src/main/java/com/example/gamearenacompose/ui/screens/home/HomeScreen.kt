@@ -1,31 +1,44 @@
 package com.example.gamearenacompose.ui.screens.home
 
+import android.icu.number.Scale
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.ConstraintSet
-import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
 import com.example.gamearenacompose.R
 import com.example.gamearenacompose.data.remote.models.genre.GenreList
 import com.example.gamearenacompose.ui.theme.darkBLue
 import com.example.gamearenacompose.ui.theme.grey
-import timber.log.Timber
+import com.google.accompanist.coil.rememberCoilPainter
 
 @Composable
 fun HomeScreen(
@@ -33,7 +46,7 @@ fun HomeScreen(
 ) {
     viewModel.getGenres()
     val genres by remember {
-       viewModel.genres
+        viewModel.genres
     }
 
     val isLoading by remember {
@@ -48,44 +61,7 @@ fun HomeScreen(
         color = darkBLue,
         modifier = Modifier.fillMaxSize()
     ) {
-        val constraintSet = ConstraintSet {
-            val welcomeTxt = createRefFor("txt_welcome")
-            val gameArenaTxt = createRefFor("txt_gme_arena")
-            val searchView = createRefFor("search")
-            val genreView = createRefFor("genre_view")
-
-
-            constrain(welcomeTxt) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
-                width = Dimension.wrapContent
-            }
-            constrain(gameArenaTxt) {
-                top.linkTo(welcomeTxt.bottom)
-                start.linkTo(welcomeTxt.start)
-            }
-
-
-            constrain(searchView){
-                top.linkTo(gameArenaTxt.bottom)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                width= Dimension.fillToConstraints
-                height = Dimension.wrapContent
-            }
-            constrain(genreView){
-                top.linkTo(searchView.bottom)
-                start.linkTo(searchView.start)
-                end.linkTo(searchView.end)
-                width= Dimension.fillToConstraints
-                height = Dimension.wrapContent
-            }
-
-
-        }
-
-        ConstraintLayout(
-            constraintSet = constraintSet,
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
@@ -117,11 +93,12 @@ fun HomeScreen(
                     .layoutId("search")
                     .padding(top = 16.dp)
             )
-            if(!genres?.isEmpty()){
+            if (!genres?.isEmpty()) {
                 GenreView(
-                    genres,isLoading,error, Modifier.layoutId("genre_view")
+                    genres, isLoading, error, Modifier.layoutId("genre_view")
                 )
-        }
+            }
+
         }
 
 
@@ -133,19 +110,57 @@ fun HomeScreen(
 fun GenreView(
     genres: List<GenreList.Result>,
     isLoading: Boolean,
-    error: String, modifier: Modifier) {
+    error: String, modifier: Modifier
+) {
     Column {
-        Text(text = "Genres",
+        Text(
+            text = "Genres",
             color = Color.White,
             style = TextStyle(
-            fontSize = 18.sp,
-            fontFamily = FontFamily(
-                Font(R.font.roboto_medium)
+                fontSize = 18.sp,
+                fontFamily = FontFamily(
+                    Font(R.font.roboto_medium)
+                )
+            ), modifier = Modifier
+                .layoutId("txt_genre")
+                .padding(top = 12.dp, start = 12.dp)
+        )
+
+        LazyRow() {
+            items(items = genres,
+                itemContent = {
+                    GenreViewItem(genre = it)
+                }
             )
-        ),modifier = Modifier.layoutId("txt_genre"))
+        }
 
     }
 
+}
+
+@ExperimentalCoilApi
+@Composable
+fun GenreViewItem(genre: GenreList.Result, modifier: Modifier = Modifier) {
+    Column(
+        modifier = Modifier.padding(top=20.dp,end = 12.dp)
+    ){
+        Box(modifier = Modifier.shadow(10.dp, RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(10.dp))
+            .background(
+                Brush.verticalGradient(
+                    listOf(Color.LightGray, grey)
+                )
+            )
+        ){
+            Image(
+                painter = rememberImagePainter(genre.imageBackground),
+                contentDescription = null,
+                modifier = Modifier.size(150.dp),
+                alignment = Alignment.Center,
+                contentScale = ContentScale.Crop
+            )
+        }
+    }
 }
 
 

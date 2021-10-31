@@ -11,10 +11,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.gamearenacompose.ui.GameArenaAppUi
 import com.example.gamearenacompose.ui.theme.GameArenaComposeTheme
 import com.example.gamearenacompose.utils.rememberWindowSizeClass
+import com.google.accompanist.pager.ExperimentalPagerApi
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @ExperimentalPagerApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

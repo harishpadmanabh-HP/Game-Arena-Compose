@@ -7,9 +7,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.gamearenacompose.ui.theme.GameArenaComposeTheme
 import com.example.gamearenacompose.utils.WindowSize
+import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 
+@ExperimentalPagerApi
 @Composable
 fun GameArenaAppUi(
     windowSize: WindowSize

@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -16,6 +17,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
@@ -23,15 +25,19 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.annotation.ExperimentalCoilApi
@@ -43,6 +49,8 @@ import com.example.gamearenacompose.ui.GameArenaDestinations
 import com.example.gamearenacompose.ui.GameArenaNavigationActions
 import com.example.gamearenacompose.ui.theme.darkBLue
 import com.example.gamearenacompose.ui.theme.grey
+import com.example.gamearenacompose.ui.theme.lightPurple
+import com.example.gamearenacompose.ui.theme.purple
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -67,56 +75,66 @@ fun HomeScreen(
     }
 
     Surface(
-        color = darkBLue,
         modifier = Modifier.fillMaxSize()
     ) {
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            Text(
-                text = "Welcome To",
-                color = Color.Gray,
-                style = TextStyle(
-                    fontSize = 14.sp,
-                ),
-                modifier = Modifier
-                    .layoutId("txt_welcome")
-                    .padding(start = 10.dp)
-            )
-            Text(
-                text = "Game Arena",
-                color = Color.White,
-                style = TextStyle(
-                    fontSize = 24.sp,
-                    fontFamily = FontFamily(Font(R.font.roboto_bold))
-                ),
-                modifier = Modifier
-                    .layoutId("txt_gme_arena")
-                    .padding(start = 10.dp)
-            )
-            SearchBar(
-                hint = "Search games...",
-                modifier = Modifier
-                    .layoutId("search")
-                    .padding(top = 16.dp)
-            )
-            if (!genres?.isEmpty()) {
-                GenreView(
-                    genres,
-                    isLoading,
-                    error,
-                    Modifier.layoutId("genre_view"),
-                    navController = navController
-                )
+            item {
+                HeaderViews()
             }
-
+            if (!genres?.isEmpty()) {
+                item {
+                    GenreView(
+                        genres,
+                        isLoading,
+                        error,
+                        Modifier.layoutId("genre_view"),
+                        navController = navController
+                    )
+                }
+            }
+            item {
+                RewardsCard()
+            }
         }
-
-
     }
 
+}
+
+@Composable
+fun HeaderViews(modifier: Modifier = Modifier) {
+    Column() {
+        Text(
+            text = "Welcome To",
+            color = Color.Gray,
+            style = TextStyle(
+                fontSize = 14.sp,
+            ),
+            modifier = Modifier
+                .layoutId("txt_welcome")
+                .padding(start = 10.dp)
+        )
+        Text(
+            text = "Game Arena",
+            color = Color.White,
+            style = TextStyle(
+                fontSize = 24.sp,
+                fontFamily = FontFamily(Font(R.font.roboto_bold))
+            ),
+            modifier = Modifier
+                .layoutId("txt_gme_arena")
+                .padding(start = 10.dp)
+        )
+        SearchBar(
+            hint = "Search games...",
+            modifier = Modifier
+                .layoutId("search")
+                .padding(top = 16.dp)
+        )
+    }
 }
 
 //Genre Frame
@@ -157,7 +175,7 @@ fun GenreView(
                 .fillMaxWidth()
                 .fillMaxHeight(.35f)
         ) { page ->
-            GenreViewItem(genre = genres[page],navController = navController)
+            GenreViewItem(genre = genres[page], navController = navController)
         }
 
     }
@@ -167,7 +185,11 @@ fun GenreView(
 //Genre list item
 @ExperimentalCoilApi
 @Composable
-fun GenreViewItem(genre: GenreList.Result, modifier: Modifier = Modifier,navController: NavController) {
+fun GenreViewItem(
+    genre: GenreList.Result,
+    modifier: Modifier = Modifier,
+    navController: NavController
+) {
     Column(
         modifier = Modifier.padding(top = 2.dp, end = 12.dp)
     ) {
@@ -181,7 +203,12 @@ fun GenreViewItem(genre: GenreList.Result, modifier: Modifier = Modifier,navCont
                     )
                 )
                 .clickable {
-                    navController.navigate(GameArenaDestinations.GENRE_ROUTE.replace("{id}",genre.id.toString()))
+                    navController.navigate(
+                        GameArenaDestinations.GENRE_ROUTE.replace(
+                            "{id}",
+                            genre.id.toString()
+                        )
+                    )
                 }
         ) {
             Image(
@@ -253,4 +280,73 @@ fun SearchBar(  //search view
             )
         }
     }
+}
+
+@Preview
+@Composable
+fun RewardsCard() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp)
+            .padding(top = 14.dp)
+            .shadow(15.dp, RoundedCornerShape(15.dp))
+            .clip(RoundedCornerShape(15.dp))
+            .background(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(
+                        lightPurple, purple
+                    )
+                )
+            )
+    ) {
+        ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+            val (rewardImg, heading,desc) = createRefs()
+            Text(
+                modifier = Modifier
+                    .wrapContentSize(TopStart)
+                    .constrainAs(heading) {
+                        top.linkTo(parent.top,margin = 16.dp)
+                        start.linkTo(parent.start,margin = 16.dp)
+
+                    },
+                text = "Get your Rewards!",
+                color = Color.White,
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontFamily = FontFamily(Font(R.font.montserrat_semibold))
+                )
+            )
+            Image(
+                painterResource(id = R.drawable.rewards),
+                contentDescription = "Rewards",
+                modifier = Modifier.padding( end = 12.dp)
+                    .width(120.dp)
+                    .height(120.dp)
+                    .constrainAs(rewardImg){
+                        top.linkTo(parent.top)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom)
+                    }
+            )
+            Text(
+                modifier = Modifier
+                    .padding(top = 12.dp, start = 18.dp)
+                    .constrainAs(desc) {
+                        top.linkTo(heading.bottom)
+                        start.linkTo(parent.start)
+                    },
+                text = "Claim daily login rewads.",
+                color = Color.White,
+                style = TextStyle(
+                    fontSize = 12.sp,
+                    fontFamily = FontFamily(Font(R.font.montserrat_regular))
+                )
+            )
+
+
+        }
+
+    }
+
 }

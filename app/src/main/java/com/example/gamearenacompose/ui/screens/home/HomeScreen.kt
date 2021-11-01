@@ -1,13 +1,12 @@
 package com.example.gamearenacompose.ui.screens.home
 
 import android.icu.number.Scale
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -18,6 +17,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.Start
 import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.Alignment.Companion.TopStart
@@ -62,6 +62,7 @@ import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 
+@ExperimentalFoundationApi
 @ExperimentalPagerApi
 @Composable
 fun HomeScreen(
@@ -71,6 +72,11 @@ fun HomeScreen(
     viewModel.getGenres()
     val genres by remember {
         viewModel.genres
+    }
+
+    viewModel.getGames()
+    val games by remember {
+        viewModel.games
     }
 
     val isLoading by remember {
@@ -106,15 +112,16 @@ fun HomeScreen(
             item {
                 RewardsCard()
             }
-            item {
-                AllGamesView(
-                    games = emptyList(),
-                    isLoading = false,
-                    error = "",
-                    modifier = Modifier,
-                    navController = navController
-                )
+            if (games.isNotEmpty()) {
+                item {
+                    AllGamesView(
+                        games = games,
+                        modifier = Modifier,
+                        navController = navController
+                    )
+                }
             }
+
         }
     }
 
@@ -382,11 +389,10 @@ fun RewardsCard() {
 
 }
 
+@ExperimentalFoundationApi
 @Composable
 fun AllGamesView(
     games: List<GameList.Result>,
-    isLoading: Boolean,
-    error: String,
     modifier: Modifier,
     navController: NavController
 ) {
@@ -423,6 +429,17 @@ fun AllGamesView(
                     }
             )
         }
+        for (i in games.indices step 2) {
+            Row(Modifier.fillMaxWidth()) {
+                GameItem(
+                    game = games[i], navController = navController
+                )
+                GameItem(game = games[i + 1], navController = navController)
+
+
+            }
+
+        }
 
     }
 
@@ -435,9 +452,12 @@ fun GameItem(
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
-    Column() {
-        Card(
+    Column(modifier = Modifier.clickable {
+        navController.navigate(GameArenaDestinations.GAME_ROUTE.replace("{id}", game.id.toString()))
+    }) {
+        Box(
             modifier = Modifier
+                .padding(top = 12.dp, end = 10.dp)
                 .height(200.dp)
                 .width(180.dp)
                 .shadow(10.dp, RoundedCornerShape(10.dp))
@@ -446,29 +466,30 @@ fun GameItem(
                     Brush.horizontalGradient(
                         listOf(Color.LightGray, grey)
                     )
-                ), elevation = 20.dp
+                )
         ) {
             Image(
-                painter = rememberImagePainter(""),
+                painter = rememberImagePainter(game.backgroundImage),
                 contentDescription = "Game Image",
                 modifier = Modifier
                     .fillMaxSize(),
                 alignment = Alignment.Center,
                 contentScale = ContentScale.Crop
             )
-            Text(
-                text = "genre.name",
-                color = Color.White,
-                modifier = Modifier
-                    .align(CenterHorizontally)
-                    .padding(top = 12.dp),
-                style = TextStyle(
-                    fontFamily = FontFamily(Font(R.font.montserrat_medium)),
-                    fontSize = 16.sp
-                )
-
-            )
 
         }
+        Text(
+            text = game.name,
+            color = Color.White,
+            modifier = Modifier
+                .padding(top = 4.dp, start = 10.dp)
+                .width(180.dp),
+            style = TextStyle(
+                fontFamily = FontFamily(Font(R.font.montserrat_medium)),
+                fontSize = 12.sp
+            )
+
+        )
+
     }
 }

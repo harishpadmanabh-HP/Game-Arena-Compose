@@ -72,7 +72,10 @@ fun HomeScreen(
     val genres by remember {
         viewModel.genres
     }
-
+    viewModel.getGames()
+    val games by remember {
+        viewModel.games
+    }
     val isLoading by remember {
         viewModel.isLoading
     }
@@ -106,14 +109,14 @@ fun HomeScreen(
             item {
                 RewardsCard()
             }
-            item {
-                AllGamesView(
-                    games = emptyList(),
-                    isLoading = false,
-                    error = "",
-                    modifier = Modifier,
-                    navController = navController
-                )
+            if (games.isNotEmpty()) {
+                item {
+                    AllGamesView(
+                        games = games,
+                        modifier = Modifier,
+                        navController = navController
+                    )
+                }
             }
         }
     }
@@ -385,8 +388,7 @@ fun RewardsCard() {
 @Composable
 fun AllGamesView(
     games: List<GameList.Result>,
-    isLoading: Boolean,
-    error: String,
+
     modifier: Modifier,
     navController: NavController
 ) {
@@ -423,7 +425,17 @@ fun AllGamesView(
                     }
             )
         }
+        for (i in games.indices step 2) {
+            Row(Modifier.fillMaxWidth()) {
+                GameItem(
+                    game = games[i], navController = navController
+                )
+                GameItem(game = games[i + 1], navController = navController)
 
+
+            }
+
+        }
     }
 
 }
@@ -435,9 +447,12 @@ fun GameItem(
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
-    Column() {
-        Card(
+    Column(modifier = Modifier.clickable {
+       // navController.navigate(GameArenaDestinations.GAME_ROUTE.replace("{id}", game.id.toString()))
+    }) {
+        Box(
             modifier = Modifier
+                .padding(top = 12.dp, end = 10.dp)
                 .height(200.dp)
                 .width(180.dp)
                 .shadow(10.dp, RoundedCornerShape(10.dp))
@@ -446,29 +461,30 @@ fun GameItem(
                     Brush.horizontalGradient(
                         listOf(Color.LightGray, grey)
                     )
-                ), elevation = 20.dp
+                )
         ) {
             Image(
-                painter = rememberImagePainter(""),
+                painter = rememberImagePainter(game.backgroundImage),
                 contentDescription = "Game Image",
                 modifier = Modifier
                     .fillMaxSize(),
                 alignment = Alignment.Center,
                 contentScale = ContentScale.Crop
             )
-            Text(
-                text = "genre.name",
-                color = Color.White,
-                modifier = Modifier
-                    .align(CenterHorizontally)
-                    .padding(top = 12.dp),
-                style = TextStyle(
-                    fontFamily = FontFamily(Font(R.font.montserrat_medium)),
-                    fontSize = 16.sp
-                )
-
-            )
 
         }
+        Text(
+            text = game.name,
+            color = Color.White,
+            modifier = Modifier
+                .padding(top = 4.dp, start = 10.dp)
+                .width(180.dp),
+            style = TextStyle(
+                fontFamily = FontFamily(Font(R.font.montserrat_medium)),
+                fontSize = 12.sp
+            )
+
+        )
+
     }
 }

@@ -3,6 +3,7 @@ package com.example.gamearenacompose.ui.screens.home
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.gamearenacompose.data.remote.models.games.GameList
 import com.example.gamearenacompose.data.remote.models.genre.GenreList
 import com.example.gamearenacompose.data.repositoy.GameRepository
 import com.example.gamearenacompose.utils.Resource
@@ -18,6 +19,7 @@ class HomeViewModel @Inject constructor(
     var isLoading = mutableStateOf(false)
     var error = mutableStateOf("")
     var genres = mutableStateOf<List<GenreList.Result>>(emptyList<GenreList.Result>())
+    var games = mutableStateOf<List<GameList.Result>>(emptyList())
 
     fun getGenres(){
         viewModelScope.launch {
@@ -38,6 +40,22 @@ class HomeViewModel @Inject constructor(
 
             }
 
+        }
+    }
+    fun getGames(){
+        viewModelScope.launch {
+            isLoading.value = true
+            val result = repo.getAllGames()
+            when(result){
+                is Resource.Success->{
+                    games.value = result.data?.results ?: emptyList()
+                    isLoading.value = false
+                }
+                is Resource.Error->{
+                    error.value = result.message.toString() ?: ""
+                    isLoading.value = false
+                }
+            }
         }
     }
 

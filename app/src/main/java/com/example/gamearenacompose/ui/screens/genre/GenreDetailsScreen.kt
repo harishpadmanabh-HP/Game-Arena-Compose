@@ -1,4 +1,4 @@
-package com.example.gamearenacompose.ui.screens.details
+package com.example.gamearenacompose.ui.screens.genre
 
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable

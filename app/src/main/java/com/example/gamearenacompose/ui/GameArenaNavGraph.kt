@@ -2,14 +2,14 @@ package com.example.gamearenacompose.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.gamearenacompose.ui.screens.details.GenreDetailsScreen
+import com.example.gamearenacompose.ui.screens.games.AllGamesScreen
+import com.example.gamearenacompose.ui.screens.genre.AllGenresScreen
+import com.example.gamearenacompose.ui.screens.genre.GenreDetailsScreen
 import com.example.gamearenacompose.ui.screens.home.HomeScreen
-import com.example.gamearenacompose.ui.screens.home.HomeViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 
 @ExperimentalPagerApi
@@ -34,7 +34,12 @@ fun GameArenaNavGraph(
                 genreId = it.arguments?.getString("id")?.toInt(),
                 navController = navController
             )
-
+        }
+        composable(GameArenaDestinations.ALL_GENRE_ROUTE){
+            AllGenresScreen(navController)
+        }
+        composable(GameArenaDestinations.ALL_GAMES_ROUTE){
+            AllGamesScreen(navController)
         }
 
     }

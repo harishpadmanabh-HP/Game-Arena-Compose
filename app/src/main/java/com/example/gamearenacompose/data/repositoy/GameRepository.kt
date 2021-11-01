@@ -1,10 +1,10 @@
 package com.example.gamearenacompose.data.repositoy
 
 import com.example.gamearenacompose.data.remote.RAWGApis
+import com.example.gamearenacompose.data.remote.models.games.GameList
 import com.example.gamearenacompose.data.remote.models.genre.GenreList
 import com.example.gamearenacompose.utils.Resource
 import dagger.hilt.android.scopes.ActivityScoped
-import timber.log.Timber
 import java.lang.Exception
 import javax.inject.Inject
 
@@ -15,9 +15,15 @@ class GameRepository
     suspend fun getGenres():Resource<GenreList> = try {
         Resource.Success(api.getGenres())
     }catch (e:Exception){
-        Timber.e("Api error occured $e")
         Resource.Error("Error $e")
     }
+
+    suspend fun getAllGames():Resource<GameList> = try {
+        Resource.Success(api.getGames())
+    }catch (e:Exception){
+        Resource.Error("Error $e")
+    }
+
 
 
 }

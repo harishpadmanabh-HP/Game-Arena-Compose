@@ -11,12 +11,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.TopCenter
+import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,22 +31,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.ActivityNavigator
 import androidx.navigation.NavController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.example.gamearenacompose.R
+import com.example.gamearenacompose.data.remote.models.games.GameList
 import com.example.gamearenacompose.data.remote.models.genre.GenreList
 import com.example.gamearenacompose.ui.GameArenaDestinations
 import com.example.gamearenacompose.ui.GameArenaNavigationActions
@@ -99,6 +106,15 @@ fun HomeScreen(
             item {
                 RewardsCard()
             }
+            item {
+                AllGamesView(
+                    games = emptyList(),
+                    isLoading = false,
+                    error = "",
+                    modifier = Modifier,
+                    navController = navController
+                )
+            }
         }
     }
 
@@ -138,6 +154,7 @@ fun HeaderViews(modifier: Modifier = Modifier) {
 }
 
 //Genre Frame
+//https://google.github.io/accompanist/pager/
 @ExperimentalPagerApi
 @Composable
 fun GenreView(
@@ -149,30 +166,43 @@ fun GenreView(
 
 ) {
     Column {
-        Text(
-            text = "Genres",
-            color = Color.White,
-            style = TextStyle(
-                fontSize = 18.sp,
-                fontFamily = FontFamily(
-                    Font(R.font.roboto_medium)
-                )
-            ), modifier = Modifier
-                .layoutId("txt_genre")
-                .padding(top = 12.dp, start = 12.dp)
-        )
+        Row(Modifier.fillMaxWidth()) {
+            Text(
+                text = "Genres",
+                color = Color.White,
+                style = TextStyle(
+                    fontSize = 18.sp,
+                    fontFamily = FontFamily(
+                        Font(R.font.roboto_medium)
+                    )
+                ), modifier = Modifier
+                    .layoutId("txt_genre")
+                    .padding(top = 12.dp, start = 12.dp)
+                    .wrapContentSize(TopStart)
+            )
+            Text(
+                text = "View All  >",
+                color = Color.Gray,
+                textAlign = TextAlign.End,
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontFamily = FontFamily(
+                        Font(R.font.montserrat_regular)
+                    )
+                ), modifier = Modifier
+                    .fillMaxWidth()
+                    .layoutId("txt_genre")
+                    .padding(top = 15.dp, start = 12.dp)
+                    .clickable {
+                        navController.navigate(GameArenaDestinations.ALL_GENRE_ROUTE)
+                    }
+            )
+        }
 
-//        LazyRow() {
-//            items(items = genres,
-//                itemContent = {
-//                    GenreViewItem(genre = it)
-//                }
-//            )
-//        }
+
         HorizontalPager(
             count = genres.size, modifier = Modifier
                 .padding(top = 12.dp)
-                .fillMaxWidth()
                 .fillMaxHeight(.35f)
         ) { page ->
             GenreViewItem(genre = genres[page], navController = navController)
@@ -191,7 +221,7 @@ fun GenreViewItem(
     navController: NavController
 ) {
     Column(
-        modifier = Modifier.padding(top = 2.dp, end = 12.dp)
+        modifier = Modifier.padding(top = 2.dp, end = 2.dp)
     ) {
         Box(
             modifier = Modifier
@@ -301,13 +331,13 @@ fun RewardsCard() {
             )
     ) {
         ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-            val (rewardImg, heading,desc) = createRefs()
+            val (rewardImg, heading, desc) = createRefs()
             Text(
                 modifier = Modifier
                     .wrapContentSize(TopStart)
                     .constrainAs(heading) {
-                        top.linkTo(parent.top,margin = 16.dp)
-                        start.linkTo(parent.start,margin = 16.dp)
+                        top.linkTo(parent.top, margin = 16.dp)
+                        start.linkTo(parent.start, margin = 16.dp)
 
                     },
                 text = "Get your Rewards!",
@@ -320,10 +350,11 @@ fun RewardsCard() {
             Image(
                 painterResource(id = R.drawable.rewards),
                 contentDescription = "Rewards",
-                modifier = Modifier.padding( end = 12.dp)
+                modifier = Modifier
+                    .padding(end = 12.dp)
                     .width(120.dp)
                     .height(120.dp)
-                    .constrainAs(rewardImg){
+                    .constrainAs(rewardImg) {
                         top.linkTo(parent.top)
                         end.linkTo(parent.end)
                         bottom.linkTo(parent.bottom)
@@ -349,4 +380,95 @@ fun RewardsCard() {
 
     }
 
+}
+
+@Composable
+fun AllGamesView(
+    games: List<GameList.Result>,
+    isLoading: Boolean,
+    error: String,
+    modifier: Modifier,
+    navController: NavController
+) {
+    Column {
+        Row(Modifier.fillMaxWidth()) {
+            Text(
+                text = "Games",
+                color = Color.White,
+                style = TextStyle(
+                    fontSize = 18.sp,
+                    fontFamily = FontFamily(
+                        Font(R.font.roboto_medium)
+                    )
+                ), modifier = Modifier
+                    .layoutId("txt_genre")
+                    .padding(top = 12.dp, start = 12.dp)
+                    .wrapContentSize(TopStart)
+            )
+            Text(
+                text = "View All  >",
+                color = Color.Gray,
+                textAlign = TextAlign.End,
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontFamily = FontFamily(
+                        Font(R.font.montserrat_regular)
+                    )
+                ), modifier = Modifier
+                    .fillMaxWidth()
+                    .layoutId("txt_genre")
+                    .padding(top = 15.dp, start = 12.dp)
+                    .clickable {
+                        navController.navigate(GameArenaDestinations.ALL_GAMES_ROUTE)
+                    }
+            )
+        }
+
+    }
+
+}
+
+
+@Composable
+fun GameItem(
+    game: GameList.Result,
+    modifier: Modifier = Modifier,
+    navController: NavController
+) {
+    Column() {
+        Card(
+            modifier = Modifier
+                .height(200.dp)
+                .width(180.dp)
+                .shadow(10.dp, RoundedCornerShape(10.dp))
+                .clip(RoundedCornerShape(10.dp))
+                .background(
+                    Brush.horizontalGradient(
+                        listOf(Color.LightGray, grey)
+                    )
+                ), elevation = 20.dp
+        ) {
+            Image(
+                painter = rememberImagePainter(""),
+                contentDescription = "Game Image",
+                modifier = Modifier
+                    .fillMaxSize(),
+                alignment = Alignment.Center,
+                contentScale = ContentScale.Crop
+            )
+            Text(
+                text = "genre.name",
+                color = Color.White,
+                modifier = Modifier
+                    .align(CenterHorizontally)
+                    .padding(top = 12.dp),
+                style = TextStyle(
+                    fontFamily = FontFamily(Font(R.font.montserrat_medium)),
+                    fontSize = 16.sp
+                )
+
+            )
+
+        }
+    }
 }

@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.gamearenacompose.ui.screens.games.AllGamesScreen
+import com.example.gamearenacompose.ui.screens.games.GameDetailScreen
 import com.example.gamearenacompose.ui.screens.genre.AllGenresScreen
 import com.example.gamearenacompose.ui.screens.genre.GenreDetailsScreen
 import com.example.gamearenacompose.ui.screens.home.HomeScreen
@@ -40,6 +41,9 @@ fun GameArenaNavGraph(
         }
         composable(GameArenaDestinations.ALL_GAMES_ROUTE){
             AllGamesScreen(navController)
+        }
+        composable(GameArenaDestinations.GAME_ROUTE){
+            GameDetailScreen(gameID =  it.arguments?.getString("id")?.toInt(), navController =navController )
         }
 
     }

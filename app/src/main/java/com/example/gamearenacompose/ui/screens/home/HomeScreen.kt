@@ -448,7 +448,7 @@ fun GameItem(
     navController: NavController
 ) {
     Column(modifier = Modifier.clickable {
-       // navController.navigate(GameArenaDestinations.GAME_ROUTE.replace("{id}", game.id.toString()))
+        navController.navigate(GameArenaDestinations.GAME_ROUTE.replace("{id}", game.id.toString()))
     }) {
         Box(
             modifier = Modifier

@@ -37,7 +37,8 @@ class GameViewModel @Inject constructor(private val repo: GameRepository) : View
     val gameFlow = MutableStateFlow<ApiMapper<Game>>(ApiMapper(ApiCallStatus.EMPTY, null, null))
     val screenshotListFlow =
         MutableStateFlow<ApiMapper<ScreenshotList>>(ApiMapper(ApiCallStatus.EMPTY, null, null))
-    val gameTrailersFlow =  MutableStateFlow<ApiMapper<GameTrailerList>>(ApiMapper(ApiCallStatus.EMPTY, null, null))
+    val gameTrailersFlow =
+        MutableStateFlow<ApiMapper<GameTrailerList>>(ApiMapper(ApiCallStatus.EMPTY, null, null))
 
     fun getGameDetails(gameId: Int) {
         viewModelScope.launch {
@@ -57,9 +58,10 @@ class GameViewModel @Inject constructor(private val repo: GameRepository) : View
     fun getGameScreenShots(id: Int) {
         viewModelScope.launch {
             val screenshots = repo.getGameScreenShots(id)
-            when(screenshots.status){
-                ApiCallStatus.SUCCESS->{
-                    screenshotListFlow.value = ApiMapper(ApiCallStatus.SUCCESS,screenshots?.data,null)
+            when (screenshots.status) {
+                ApiCallStatus.SUCCESS -> {
+                    screenshotListFlow.value =
+                        ApiMapper(ApiCallStatus.SUCCESS, screenshots?.data, null)
                 }
                 ApiCallStatus.ERROR -> {
                     gameFlow.value = ApiMapper(ApiCallStatus.ERROR, null, screenshots.errorMessage)
@@ -68,15 +70,25 @@ class GameViewModel @Inject constructor(private val repo: GameRepository) : View
         }
     }
 
-
-    fun getPagedGames()=search.flatMapLatest {
-        Pager(PagingConfig(1),pagingSourceFactory = {
-            GamesDataSource(repo,it)
+    fun getPagedGames() = search.flatMapLatest {querry->
+        Pager(PagingConfig(1), pagingSourceFactory = {
+            GamesDataSource(repo, querry)
         }).flow
     }
 
-    fun getGameTrailers(id:Int){
+    fun getGameTrailers(id: Int) {
         viewModelScope.launch {
+            val trailerList = repo.getGameTrailers(id)
+            when (trailerList.status) {
+                ApiCallStatus.SUCCESS -> {
+                    gameTrailersFlow.value =
+                        ApiMapper(ApiCallStatus.SUCCESS, trailerList?.data, null)
+                }
+                ApiCallStatus.ERROR -> {
+                    gameTrailersFlow.value =
+                        ApiMapper(ApiCallStatus.ERROR, null, trailerList.errorMessage)
+                }
+            }
 
         }
     }

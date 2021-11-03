@@ -19,7 +19,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 
 @Composable
-fun VideoPlayer(uri: Uri) {
+fun VideoPlayer(url: String) {
     val context = LocalContext.current
 
     val exoPlayer = remember {
@@ -32,7 +32,7 @@ fun VideoPlayer(uri: Uri) {
                 )
 
                 val source = ProgressiveMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(uri)
+                    .createMediaSource(Uri.parse(url))
 
                 this.prepare(source)
             }

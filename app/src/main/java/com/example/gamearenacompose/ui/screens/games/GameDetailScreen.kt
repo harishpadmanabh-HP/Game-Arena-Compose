@@ -79,7 +79,7 @@ fun GameDetails(
                 .height(400.dp)
                 .background(
                     Brush.verticalGradient(
-                        listOf(androidx.compose.ui.graphics.Color.Black, grey)
+                        listOf(Color.LightGray, grey)
                     )
                 )
         ) {
@@ -186,7 +186,7 @@ fun ScreenShotsView(screenshotList: ScreenshotList, modifier: Modifier) {
             text = "Screenshots", color = Color.White, style = TextStyle(
                 fontFamily = FontFamily(Font(R.font.montserrat_medium)),
                 fontSize = 18.sp
-            ), modifier = Modifier.padding(top = 8.dp, start = 16.dp)
+            ), modifier = Modifier.padding(top = 8.dp, start = 25.dp)
         )
         HorizontalPager(
             count = screenshotList.results.size, modifier = Modifier

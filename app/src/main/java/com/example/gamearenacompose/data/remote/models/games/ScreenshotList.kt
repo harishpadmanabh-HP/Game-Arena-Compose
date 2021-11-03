@@ -7,9 +7,9 @@ data class ScreenshotList(
     @SerializedName("count")
     var count: Int,
     @SerializedName("next")
-    var next: Any?,
+    var next: String?,
     @SerializedName("previous")
-    var previous: Any?,
+    var previous: String?,
     @SerializedName("results")
     var results: List<Result>
 ) {

@@ -2,6 +2,7 @@ package com.example.gamearenacompose.data.remote
 
 import com.example.gamearenacompose.data.remote.models.games.Game
 import com.example.gamearenacompose.data.remote.models.games.GameList
+import com.example.gamearenacompose.data.remote.models.games.ScreenshotList
 import com.example.gamearenacompose.data.remote.models.genre.Genre
 import com.example.gamearenacompose.data.remote.models.genre.GenreList
 import retrofit2.http.GET
@@ -25,6 +26,11 @@ interface RAWGApis {
     suspend fun getGameDetails(
         @Path("id") id:Int
     ):Game
+
+    @GET("games/{id}/screenshots")
+    suspend fun getGameScreenshots(
+        @Path("id") id:Int
+    ):ScreenshotList
 
 
 

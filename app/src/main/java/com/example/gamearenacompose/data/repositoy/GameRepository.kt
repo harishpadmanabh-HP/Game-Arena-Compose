@@ -1,8 +1,12 @@
 package com.example.gamearenacompose.data.repositoy
 
 import com.example.gamearenacompose.data.remote.RAWGApis
+import com.example.gamearenacompose.data.remote.models.games.Game
 import com.example.gamearenacompose.data.remote.models.games.GameList
+import com.example.gamearenacompose.data.remote.models.games.ScreenshotList
 import com.example.gamearenacompose.data.remote.models.genre.GenreList
+import com.example.gamearenacompose.utils.ApiCallStatus
+import com.example.gamearenacompose.utils.ApiMapper
 import com.example.gamearenacompose.utils.Resource
 import dagger.hilt.android.scopes.ActivityScoped
 import java.lang.Exception
@@ -24,6 +28,17 @@ class GameRepository
         Resource.Error("Error $e")
     }
 
+     suspend fun getGameDetails(id:Int):ApiMapper<Game> = try {
+        val response = api.getGameDetails(id)
+        ApiMapper(ApiCallStatus.SUCCESS,response,null)
+    }catch (e:Exception){
+        ApiMapper(ApiCallStatus.ERROR,null,e.toString())
+    }
 
-
+    suspend fun getGameScreenShots(id:Int):ApiMapper<ScreenshotList> = try {
+        val response = api.getGameScreenshots(id)
+        ApiMapper(ApiCallStatus.SUCCESS,response,null)
+    }catch (e:Exception){
+        ApiMapper(ApiCallStatus.ERROR,null,e.toString())
+    }
 }

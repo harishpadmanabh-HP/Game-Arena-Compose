@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Surface
@@ -21,8 +20,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalConsumer
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -34,13 +31,10 @@ import coil.compose.rememberImagePainter
 import com.example.gamearenacompose.R
 import com.example.gamearenacompose.data.remote.models.games.Game
 import com.example.gamearenacompose.data.remote.models.games.ScreenshotList
-import com.example.gamearenacompose.ui.screens.home.GenreViewItem
 import com.example.gamearenacompose.ui.theme.grey
 import com.example.gamearenacompose.utils.ApiMapper
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
-import dev.chrisbanes.accompanist.coil.CoilImage
-import timber.log.Timber
 
 @ExperimentalPagerApi
 @Composable
@@ -107,7 +101,7 @@ fun GameDetails(
         InfoView(title = game.name, desc = game.descriptionRaw)
 
         screenshot?.data?.let {
-            ScreenShotsView(it)
+            ScreenShotsView(it,modifier=Modifier.padding(12.dp))
         }
 
 
@@ -184,30 +178,9 @@ fun InfoView(title: String, desc: String, modifier: Modifier = Modifier) {
     }
 }
 
-@Composable
-fun ScreenShotCard(screenshot: ScreenshotList.Result, modifier: Modifier = Modifier.fillMaxWidth()) {
-    Timber.e("Screen Shot ${screenshot.image}")
-//    Box(
-//        modifier = Modifier
-//            .height(200.dp)
-//            .fillMaxWidth()
-//            .shadow(10.dp, RoundedCornerShape(10.dp))
-//            .clip(RoundedCornerShape(10.dp))
-//            .background(
-//                Brush.horizontalGradient(
-//                    listOf(Color.LightGray, grey)
-//                )
-//            )
-//    ) {
-
-//    }
-  //  Text(text = screenshot.image)
-
-}
-
 @ExperimentalPagerApi
 @Composable
-fun ScreenShotsView(screenshotList: ScreenshotList) {
+fun ScreenShotsView(screenshotList: ScreenshotList, modifier: Modifier) {
     Column(Modifier.fillMaxWidth()) {
         Text(
             text = "Screenshots", color = Color.White, style = TextStyle(
@@ -221,26 +194,28 @@ fun ScreenShotsView(screenshotList: ScreenshotList) {
                 .fillMaxHeight()
 
         ) { page ->
-            Image(
-                painter = rememberImagePainter(screenshotList.results[page].image),
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp),
-                alignment = Alignment.Center,
-                contentScale = ContentScale.Crop
-            )
+            Box(
+                modifier = Modifier.padding(12.dp)
+                    .shadow(10.dp, RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(Color.LightGray, grey)
+                        )
+                    )){
+                Image(
+                    painter = rememberImagePainter(screenshotList.results[page].image),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(450.dp),
+                    alignment = Alignment.Center,
+                    contentScale = ContentScale.Crop
+                )
+            }
+
         }
 
-//        Image(
-//            painter = rememberImagePainter(screenshotList.results[0].image),
-//            contentDescription = null,
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(150.dp),
-//            alignment = Alignment.Center,
-//            contentScale = ContentScale.Crop
-//        )
     }
 
 

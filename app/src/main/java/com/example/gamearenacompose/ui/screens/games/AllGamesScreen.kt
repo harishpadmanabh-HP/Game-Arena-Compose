@@ -3,6 +3,7 @@ package com.example.gamearenacompose.ui.screens.games
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
@@ -13,12 +14,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -33,6 +31,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.rememberImagePainter
 import com.example.gamearenacompose.R
 import com.example.gamearenacompose.data.remote.models.games.GameList
+import com.example.gamearenacompose.ui.GameArenaDestinations
 import com.example.gamearenacompose.ui.screens.home.SearchBar
 import com.example.gamearenacompose.ui.theme.grey
 
@@ -57,7 +56,7 @@ fun AllGamesScreen(
             SearchBar(modifier = Modifier.padding(16.dp), hint = "Search Games...") {
 
             }
-            GameListView(lazyGameList)
+            GameListView(lazyGameList,navController = navController)
 
         }
 
@@ -83,7 +82,7 @@ fun AllGamesScreen(
 @ExperimentalFoundationApi
 @Composable
 fun GameListView(lazyGameList: LazyPagingItems<GameList.Result>,
-                 modifier: Modifier = Modifier) {
+                 modifier: Modifier = Modifier,navController: NavHostController) {
     LazyVerticalGrid(
         cells = GridCells.Fixed(2),
         content = {
@@ -94,7 +93,7 @@ fun GameListView(lazyGameList: LazyPagingItems<GameList.Result>,
                         text = it.name,
                         color = Color.Black
                     )
-                    GameCardView(it)
+                    GameCardView(it,navController)
                 }
             }
         }
@@ -102,12 +101,15 @@ fun GameListView(lazyGameList: LazyPagingItems<GameList.Result>,
 }
 
 @Composable
-fun GameCardView(game: GameList.Result) {
+fun GameCardView(game: GameList.Result, navController: NavHostController) {
     Card(
         elevation = 20.dp,
         backgroundColor = grey,
         modifier =
-        Modifier.padding(16.dp)
+        Modifier.padding(12.dp)
+            .clickable {
+                navController.navigate(GameArenaDestinations.GAME_ROUTE.replace("{id}", game.id.toString()))
+            }
             .clip(RoundedCornerShape(10.dp))
             .height(300.dp)
             .fillMaxWidth()
@@ -136,7 +138,7 @@ fun GameCardView(game: GameList.Result) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
-                    .height(150.dp)
+                    .height(250.dp)
                     .fillMaxWidth()
             )
             Text(
@@ -157,24 +159,7 @@ fun GameCardView(game: GameList.Result) {
                     .fillMaxWidth()
                     .padding(8.dp)
             )
-            Row(
-                modifier =
-                Modifier.fillMaxWidth().constrainAs(
-                    rating
-                ) {
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-            ) {
-                Text(
-                    text = game.rating.toString(),
-                    color = Color(0xFFFFC400),
-                    modifier = Modifier.padding(8.dp),
-                    fontSize = 18.sp
-                )
 
-            }
         }
     }
 

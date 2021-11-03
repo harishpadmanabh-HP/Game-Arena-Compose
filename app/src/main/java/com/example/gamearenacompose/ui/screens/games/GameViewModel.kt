@@ -4,6 +4,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.example.gamearenacompose.data.paging.GamesDataSource
 import com.example.gamearenacompose.data.remote.models.games.Game
 import com.example.gamearenacompose.data.remote.models.games.GameList
 import com.example.gamearenacompose.data.remote.models.games.ScreenshotList
@@ -18,6 +22,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GameViewModel @Inject constructor(private val repo: GameRepository) : ViewModel() {
+
+
     var isLoading = mutableStateOf(false)
     var error = mutableStateOf("")
 
@@ -52,6 +58,10 @@ class GameViewModel @Inject constructor(private val repo: GameRepository) : View
             }
         }
     }
+
+    fun getPaginatedGames() = Pager(PagingConfig(1),pagingSourceFactory = {
+        GamesDataSource(repo)
+    }).flow
 
 
 }

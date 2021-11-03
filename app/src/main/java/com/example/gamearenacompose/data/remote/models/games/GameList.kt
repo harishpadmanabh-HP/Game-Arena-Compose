@@ -1,6 +1,7 @@
 package com.example.gamearenacompose.data.remote.models.games
 
 
+import androidx.paging.compose.LazyPagingItems
 import com.google.gson.annotations.SerializedName
 
 data class GameList(

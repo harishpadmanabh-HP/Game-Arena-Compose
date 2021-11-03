@@ -5,6 +5,7 @@ import com.example.gamearenacompose.data.remote.models.games.GameList
 import com.example.gamearenacompose.data.remote.models.games.ScreenshotList
 import com.example.gamearenacompose.data.remote.models.genre.Genre
 import com.example.gamearenacompose.data.remote.models.genre.GenreList
+import com.example.gamearenacompose.ui.screens.games.GameViewModel
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -31,6 +32,12 @@ interface RAWGApis {
     suspend fun getGameScreenshots(
         @Path("id") id:Int
     ):ScreenshotList
+
+    @GET("/api/games")
+    suspend fun getGamesPaginated(
+        @Query("page") page: Int,
+        @Query("page_size") pageSize: Int,
+    ): GameList
 
 
 

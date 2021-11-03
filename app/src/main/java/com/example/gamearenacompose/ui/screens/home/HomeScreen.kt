@@ -147,12 +147,12 @@ fun HeaderViews(modifier: Modifier = Modifier) {
                 .layoutId("txt_gme_arena")
                 .padding(start = 10.dp)
         )
-        SearchBar(
-            hint = "Search games...",
-            modifier = Modifier
-                .layoutId("search")
-                .padding(top = 16.dp)
-        )
+//        SearchBar(
+//            hint = "Search games...",
+//            modifier = Modifier
+//                .layoutId("search")
+//                .padding(top = 16.dp)
+//        )
     }
 }
 

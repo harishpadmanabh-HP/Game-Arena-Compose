@@ -2,6 +2,7 @@ package com.example.gamearenacompose.data.remote
 
 import com.example.gamearenacompose.data.remote.models.games.Game
 import com.example.gamearenacompose.data.remote.models.games.GameList
+import com.example.gamearenacompose.data.remote.models.games.GameTrailerList
 import com.example.gamearenacompose.data.remote.models.games.ScreenshotList
 import com.example.gamearenacompose.data.remote.models.genre.Genre
 import com.example.gamearenacompose.data.remote.models.genre.GenreList
@@ -33,12 +34,17 @@ interface RAWGApis {
         @Path("id") id:Int
     ):ScreenshotList
 
-    @GET("/api/games")
+    @GET("games")
     suspend fun getGamesPaginated(
         @Query("page") page: Int,
         @Query("page_size") pageSize: Int,
+        @Query("search") searchQuerry:String
     ): GameList
 
+    @GET("games/{id}/movies")
+    suspend fun getGameTrailers(
+        @Path("id") id:Int
+    ):GameTrailerList
 
 
 }

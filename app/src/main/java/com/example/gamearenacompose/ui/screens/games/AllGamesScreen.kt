@@ -41,7 +41,7 @@ fun AllGamesScreen(
     navController: NavHostController,
     viewModel: GameViewModel = hiltViewModel<GameViewModel>()
 ) {
-    val lazyGameList = viewModel.getPaginatedGames().collectAsLazyPagingItems()
+    val queriedGames = viewModel.getPagedGames().collectAsLazyPagingItems()
 
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -54,9 +54,9 @@ fun AllGamesScreen(
                 ), modifier = Modifier.padding(16.dp)
             )
             SearchBar(modifier = Modifier.padding(16.dp), hint = "Search Games...") {
-
+                viewModel.search.value = it
             }
-            GameListView(lazyGameList,navController = navController)
+            GameListView(queriedGames,navController = navController)
 
         }
 
@@ -106,18 +106,24 @@ fun GameCardView(game: GameList.Result, navController: NavHostController) {
         elevation = 20.dp,
         backgroundColor = grey,
         modifier =
-        Modifier.padding(12.dp)
+        Modifier
+            .padding(12.dp)
             .clickable {
-                navController.navigate(GameArenaDestinations.GAME_ROUTE.replace("{id}", game.id.toString()))
+                navController.navigate(
+                    GameArenaDestinations.GAME_ROUTE.replace(
+                        "{id}",
+                        game.id.toString()
+                    )
+                )
             }
             .clip(RoundedCornerShape(10.dp))
             .height(300.dp)
             .fillMaxWidth()
             .background(
-            Brush.verticalGradient(
-                listOf(Color.LightGray, grey)
+                Brush.verticalGradient(
+                    listOf(Color.LightGray, grey)
+                )
             )
-        )
     ) {
         ConstraintLayout {
             val (image, title, rating) = createRefs()
@@ -133,11 +139,12 @@ fun GameCardView(game: GameList.Result, navController: NavHostController) {
                 ),
                 contentDescription = "Image",
                 modifier =
-                Modifier.constrainAs(image) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
+                Modifier
+                    .constrainAs(image) {
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
                     .height(250.dp)
                     .fillMaxWidth()
             )
@@ -151,11 +158,12 @@ fun GameCardView(game: GameList.Result, navController: NavHostController) {
                 maxLines = 2,
                 fontWeight = FontWeight.Bold,
                 modifier =
-                Modifier.constrainAs(title) {
-                    top.linkTo(image.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
+                Modifier
+                    .constrainAs(title) {
+                        top.linkTo(image.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
                     .fillMaxWidth()
                     .padding(8.dp)
             )

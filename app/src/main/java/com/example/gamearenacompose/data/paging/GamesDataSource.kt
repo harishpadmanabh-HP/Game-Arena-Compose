@@ -8,7 +8,8 @@ import com.example.gamearenacompose.data.repositoy.GameRepository
 import javax.inject.Inject
 
 class GamesDataSource(
-private val repo:GameRepository
+private val repo:GameRepository,
+private var search:String =""
 ) : PagingSource<Int, GameList.Result>() {
 
     @Inject
@@ -21,7 +22,7 @@ private val repo:GameRepository
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, GameList.Result> {
         val nextPage = params.key ?: 1
-        val response = repo.getPaginatedGames(nextPage,50)
+        val response = repo.getPaginatedGames(nextPage,50,search)
         return if(response.results.isEmpty()){
             LoadResult.Error(Throwable("No Games Found"))
         }else{

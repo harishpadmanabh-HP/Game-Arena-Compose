@@ -136,5 +136,9 @@ dependencies {
     implementation "dev.chrisbanes.accompanist:accompanist-coil:0.5.0"
     implementation "androidx.paging:paging-compose:1.0.0-alpha14"
 
+    implementation 'com.google.android.exoplayer:exoplayer:2.11.7'
+
+
+
 
 }

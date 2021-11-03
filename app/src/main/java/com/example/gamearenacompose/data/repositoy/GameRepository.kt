@@ -3,6 +3,7 @@ package com.example.gamearenacompose.data.repositoy
 import com.example.gamearenacompose.data.remote.RAWGApis
 import com.example.gamearenacompose.data.remote.models.games.Game
 import com.example.gamearenacompose.data.remote.models.games.GameList
+import com.example.gamearenacompose.data.remote.models.games.GameTrailerList
 import com.example.gamearenacompose.data.remote.models.games.ScreenshotList
 import com.example.gamearenacompose.data.remote.models.genre.GenreList
 import com.example.gamearenacompose.utils.ApiCallStatus
@@ -42,5 +43,12 @@ class GameRepository
         ApiMapper(ApiCallStatus.ERROR,null,e.toString())
     }
 
-    suspend fun getPaginatedGames(page:Int,pageSize:Int)=api.getGamesPaginated(page, pageSize)
+    suspend fun getPaginatedGames(page:Int,pageSize:Int,search:String)=api.getGamesPaginated(page, pageSize,search)
+
+    suspend fun getGameTrailers(id:Int):ApiMapper<GameTrailerList> = try {
+        val response = api.getGameTrailers(id)
+        ApiMapper(ApiCallStatus.SUCCESS,response,null)
+    }catch (e:Exception){
+        ApiMapper(ApiCallStatus.ERROR,null,e.toString())
+    }
 }

@@ -31,6 +31,7 @@ import coil.compose.rememberImagePainter
 import com.example.gamearenacompose.R
 import com.example.gamearenacompose.data.remote.models.games.Game
 import com.example.gamearenacompose.data.remote.models.games.ScreenshotList
+import com.example.gamearenacompose.ui.components.VideoPlayer
 import com.example.gamearenacompose.ui.theme.grey
 import com.example.gamearenacompose.utils.ApiMapper
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -98,10 +99,24 @@ fun GameDetails(
             genre = game.genres.first().name,
         )
 
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)){
+            VideoPlayer(
+                url = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+
+            )
+        }
+
+
+
+
+
+
         InfoView(title = game.name, desc = game.descriptionRaw)
 
         screenshot?.data?.let {
-            ScreenShotsView(it,modifier=Modifier.padding(12.dp))
+            ScreenShotsView(it, modifier = Modifier.padding(12.dp))
         }
 
 
@@ -195,14 +210,16 @@ fun ScreenShotsView(screenshotList: ScreenshotList, modifier: Modifier) {
 
         ) { page ->
             Box(
-                modifier = Modifier.padding(12.dp)
+                modifier = Modifier
+                    .padding(12.dp)
                     .shadow(10.dp, RoundedCornerShape(10.dp))
                     .clip(RoundedCornerShape(10.dp))
                     .background(
                         Brush.verticalGradient(
                             listOf(Color.LightGray, grey)
                         )
-                    )){
+                    )
+            ) {
                 Image(
                     painter = rememberImagePainter(screenshotList.results[page].image),
                     contentDescription = null,

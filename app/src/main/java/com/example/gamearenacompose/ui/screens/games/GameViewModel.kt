@@ -30,6 +30,7 @@ import javax.inject.Inject
 class GameViewModel @Inject constructor(private val repo: GameRepository) : ViewModel() {
 
 
+
     var isLoading = mutableStateOf(false)
     var error = mutableStateOf("")
     var search = MutableStateFlow<String>("")

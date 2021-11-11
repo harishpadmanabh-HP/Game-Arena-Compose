@@ -30,6 +30,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.gamearenacompose.R
 import com.example.gamearenacompose.data.remote.models.games.Game
+import com.example.gamearenacompose.data.remote.models.games.GameTrailerList
 import com.example.gamearenacompose.data.remote.models.games.ScreenshotList
 import com.example.gamearenacompose.ui.components.VideoPlayer
 import com.example.gamearenacompose.ui.theme.grey
@@ -48,14 +49,21 @@ fun GameDetailScreen(
     if (gameID != null) {
         viewModel.getGameDetails(gameId = gameID)
         viewModel.getGameScreenShots(id = gameID)
+        viewModel.getGameTrailers(id = gameID)
     }
     val game by viewModel.gameFlow.collectAsState()
     val screenshots by viewModel.screenshotListFlow.collectAsState()
+    val gameTrailers by viewModel.gameTrailersFlow.collectAsState()
     Surface(modifier = Modifier.fillMaxSize()) {
         game.data?.let {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 item {
-                    GameDetails(game = it, screenshot = screenshots, navController = navController)
+                    GameDetails(
+                        game = it,
+                        screenshot = screenshots,
+                        trailers = gameTrailers,
+                        navController = navController
+                    )
                 }
 
             }
@@ -70,7 +78,10 @@ fun GameDetailScreen(
 @ExperimentalPagerApi
 @Composable
 fun GameDetails(
-    game: Game, screenshot: ApiMapper<ScreenshotList>, navController: NavController,
+    game: Game,
+    screenshot: ApiMapper<ScreenshotList>,
+    trailers: ApiMapper<GameTrailerList>,
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
     Column {
@@ -99,18 +110,23 @@ fun GameDetails(
             genre = game.genres.first().name,
         )
 
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp)){
-            VideoPlayer(
-                url = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-
-            )
+        trailers?.data?.let {
+            if (it.results.isNotEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .padding(24.dp)
+                        .shadow(10.dp, RoundedCornerShape(10.dp))
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Color.DarkGray)
+                ) {
+                    VideoPlayer(
+                        url = it.results.get(0).quality.max
+                    )
+                }
+            }
         }
-
-
-
-
 
 
         InfoView(title = game.name, desc = game.descriptionRaw)
@@ -118,6 +134,8 @@ fun GameDetails(
         screenshot?.data?.let {
             ScreenShotsView(it, modifier = Modifier.padding(12.dp))
         }
+
+
 
 
     }

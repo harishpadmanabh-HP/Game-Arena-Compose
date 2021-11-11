@@ -41,6 +41,13 @@ interface RAWGApis {
         @Query("search") searchQuerry:String
     ): GameList
 
+    @GET("genres")
+    suspend fun getGenresPaginated(
+        @Query("page") page: Int,
+        @Query("page_size") pageSize: Int,
+        @Query("search") searchQuerry:String
+    ): GenreList
+
     @GET("games/{id}/movies")
     suspend fun getGameTrailers(
         @Path("id") id:Int

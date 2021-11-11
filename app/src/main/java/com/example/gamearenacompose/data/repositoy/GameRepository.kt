@@ -51,4 +51,6 @@ class GameRepository
     }catch (e:Exception){
         ApiMapper(ApiCallStatus.ERROR,null,e.toString())
     }
+
+    suspend fun getPaginatedGenres(page:Int,pageSize:Int,search:String)  = api.getGenresPaginated(page, pageSize,search)
 }

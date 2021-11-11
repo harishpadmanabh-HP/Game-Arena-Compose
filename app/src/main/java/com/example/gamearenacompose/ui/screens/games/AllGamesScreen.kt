@@ -61,22 +61,6 @@ fun AllGamesScreen(
         }
 
     }
-
-//    LazyVerticalGrid(
-//        cells = GridCells.Fixed(2),
-//        content = {
-//            items(lazyGameList.itemCount) { index ->
-//                lazyGameList[index]?.let {
-//                    Text(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        text = it.name,
-//                        color = Color.Black
-//                    )
-//                }
-//            }
-//        }
-//    )
-
 }
 
 @ExperimentalFoundationApi

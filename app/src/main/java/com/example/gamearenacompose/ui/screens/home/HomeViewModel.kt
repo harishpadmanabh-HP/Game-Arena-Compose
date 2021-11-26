@@ -12,6 +12,7 @@ import com.example.gamearenacompose.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
@@ -62,9 +63,14 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun doLogin(email:String,pswd:String){
-        Timber.e("Current user ${ prefs.user}")
-        prefs.user = User(email,pswd)
+    fun doLogin(email:String,pswd:String,onLoginCallack:(status:Boolean,message:String)->Unit){
+        try {
+            prefs.user = User(email,pswd)
+            onLoginCallack(true,"Logged in Successfully!")
+        }catch (e:Exception){
+            onLoginCallack(false,"Something went wrong.Please check your credentials")
+        }
+
     }
 
 

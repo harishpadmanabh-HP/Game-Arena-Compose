@@ -1,5 +1,6 @@
 package com.example.gamearenacompose.ui.screens.home
 
+import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
@@ -30,6 +31,7 @@ import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -55,6 +57,7 @@ import com.example.gamearenacompose.ui.theme.lightPurple
 import com.example.gamearenacompose.ui.theme.purple
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
+import timber.log.Timber
 
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi
@@ -349,7 +352,9 @@ fun AnimatedRewardCard(viewModel: HomeViewModel) {
             }
         ) { targetExpanded ->
             if (targetExpanded) {
-                RewardCardExpanded(viewModel)
+                RewardCardExpanded(viewModel){
+                    expanded = !expanded //collapsing card when callback received after login
+                }
             } else {
                 RewardsCard()
             }
@@ -358,9 +363,8 @@ fun AnimatedRewardCard(viewModel: HomeViewModel) {
     }
 }
 
-@Preview
 @Composable
-fun RewardCardExpanded(viewModel: HomeViewModel) {
+fun RewardCardExpanded(viewModel: HomeViewModel,onShrink:()->Unit) {
 
     var emailInput by remember {
         mutableStateOf("")
@@ -370,9 +374,7 @@ fun RewardCardExpanded(viewModel: HomeViewModel) {
         mutableStateOf("")
     }
 
-
-
-
+    var context = LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -488,7 +490,10 @@ fun RewardCardExpanded(viewModel: HomeViewModel) {
                 }
             )
 
-            Button(onClick = { onLoginClicked(emailInput, pswdInput, viewModel) },
+            Button(onClick = { onLoginClicked(emailInput, pswdInput, viewModel){status, message ->
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                onShrink()
+            } },
                 elevation = ButtonDefaults.elevation(),
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
                 modifier = Modifier.constrainAs(login) {
@@ -511,8 +516,11 @@ fun RewardCardExpanded(viewModel: HomeViewModel) {
     }
 }
 
-fun onLoginClicked(emailInput: String, pswdInput: String, viewModel: HomeViewModel) {
-    viewModel.doLogin(emailInput, pswdInput)
+fun onLoginClicked(emailInput: String, pswdInput: String, viewModel: HomeViewModel,onLoginCallack:(status:Boolean,message:String)->Unit) {
+    Timber.e("Email $emailInput pswd $pswdInput")
+    viewModel.doLogin(emailInput, pswdInput){status, message ->
+        onLoginCallack(status,message)
+    }
 }
 
 @Preview
@@ -680,26 +688,3 @@ fun GameItem(
 
     }
 }
-//
-//@Composable
-//fun OutlinedTextField(modifier: Modifier=Modifier) {
-//    var text by remember {
-//        mutableStateOf("")
-//    }
-//    Scaffold() {
-//        Box(modifier = Modifier
-//            .padding(horizontal = 16.dp)) {
-//            OutlinedTextField(
-//                modifier = Modifier.fillMaxWidth(),
-//                value = text,
-//                onValueChange = { text = it },
-//                label = { Text("Email") },
-//                colors = TextFieldDefaults.outlinedTextFieldColors(
-//                    textColor = Color.White,
-//                    focusedBorderColor = Color.White,
-//                    unfocusedBorderColor = Color.Black,
-//                backgroundColor = purple)
-//            )
-//        }
-//    }
-//}

@@ -1,5 +1,9 @@
 package com.example.gamearenacompose.ui
 
+/**
+ * This Singleton object holds the routes for all screens (similar to url end points)
+ */
+
 object GameArenaDestinations {
     const val HOME_ROUTE : String= "home"
     const val GENRE_ROUTE : String= "genre/{id}"

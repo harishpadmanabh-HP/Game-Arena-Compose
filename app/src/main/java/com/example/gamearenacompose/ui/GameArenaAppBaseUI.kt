@@ -15,6 +15,9 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 
+/**
+ * This Composable Function is the starting point which has all other screens and configs
+ */
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @ExperimentalFoundationApi
@@ -23,26 +26,30 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 fun GameArenaAppUi(
     windowSize: WindowSize
 ) {
-    GameArenaComposeTheme {
+    GameArenaComposeTheme {                   //Applies defined theme to all composable defined in the block
+        /**
+         * Set System ui bar colors (nav bars anf status bar)
+         */
         val systemUiController = rememberSystemUiController()
         val darkIcons = MaterialTheme.colors.isLight
         SideEffect {
-            systemUiController.setSystemBarsColor(darkBLue, darkIcons = darkIcons)
+            systemUiController.setSystemBarsColor(darkBLue, darkIcons = darkIcons)  //set colors to system bar and its icons
         }
+
+
+        /**
+         * Set Navigation Controller for the entire app with ONLY ONE INSTANCE of navController
+         */
         val navController = rememberNavController()
         val navigationActions = remember(navController) {
-            GameArenaNavigationActions(navController)
+            GameArenaNavigationActions(navController)      //Configure Navigation graph and Actions
         }
 
-        val coroutineScope = rememberCoroutineScope()
 
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute =
-            navBackStackEntry?.destination?.route ?: GameArenaDestinations.HOME_ROUTE
-
-        val isExpandedScreen = windowSize == WindowSize.Expanded
-        GameArenaNavGraph(isExpandedScreen = isExpandedScreen)
-
+        /**
+         * Set up Nav graph for the app
+         */
+        GameArenaNavGraph()
 
 
     }

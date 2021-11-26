@@ -16,17 +16,20 @@ import com.example.gamearenacompose.ui.screens.genre.GenreDetailsScreen
 import com.example.gamearenacompose.ui.screens.home.HomeScreen
 import com.google.accompanist.pager.ExperimentalPagerApi
 
+/**
+ * Defines the navigation graph and navigation actions for all screen in he app.
+ */
+
+
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalPagerApi
 @Composable
 fun GameArenaNavGraph(
-    isExpandedScreen: Boolean,
     modifier: Modifier = Modifier,
-    navController: NavHostController = rememberNavController(),
-    //openDrawer: () -> Unit = {},
-    startDestination: String = GameArenaDestinations.HOME_ROUTE
+    navController: NavHostController = rememberNavController(),   //get nav host controller instance created,this navController is passed to all fns in which further navigation is required
+    startDestination: String = GameArenaDestinations.HOME_ROUTE               //starting route (screen)
 ) {
     NavHost(
         navController = navController,
@@ -34,22 +37,25 @@ fun GameArenaNavGraph(
         startDestination = startDestination,
     ) {
         composable(GameArenaDestinations.HOME_ROUTE) {
-            HomeScreen(navController = navController)
+            HomeScreen(navController = navController)          //Home Screen
         }
         composable(GameArenaDestinations.GENRE_ROUTE) {
-            GenreDetailsScreen(
+            GenreDetailsScreen(                               //Genre Details screen
                 genreId = it.arguments?.getString("id")?.toInt(),
                 navController = navController
             )
         }
-        composable(GameArenaDestinations.ALL_GENRE_ROUTE){
-            AllGenresScreen(navController)
+        composable(GameArenaDestinations.ALL_GENRE_ROUTE) {
+            AllGenresScreen(navController)                   //All Genres listing Screen
         }
-        composable(GameArenaDestinations.ALL_GAMES_ROUTE){
-            AllGamesScreen(navController)
+        composable(GameArenaDestinations.ALL_GAMES_ROUTE) {
+            AllGamesScreen(navController)                //All games listing Sreen
         }
-        composable(GameArenaDestinations.GAME_ROUTE){
-            GameDetailScreen(gameID =  it.arguments?.getString("id")?.toInt(), navController =navController )
+        composable(GameArenaDestinations.GAME_ROUTE) {
+            GameDetailScreen(
+                gameID = it.arguments?.getString("id")?.toInt(),  //Game details Screen
+                navController = navController
+            )
         }
 
     }

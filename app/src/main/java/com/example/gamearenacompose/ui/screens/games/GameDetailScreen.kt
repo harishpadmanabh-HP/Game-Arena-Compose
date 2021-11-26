@@ -1,5 +1,7 @@
 package com.example.gamearenacompose.ui.screens.games
 
+import android.content.Context
+import android.util.AttributeSet
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -20,12 +22,14 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.AbstractComposeView
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.gamearenacompose.R
@@ -255,4 +259,7 @@ fun ScreenShotsView(screenshotList: ScreenshotList, modifier: Modifier) {
 
 
 }
+
+
+
 

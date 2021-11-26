@@ -53,4 +53,11 @@ class GameRepository
     }
 
     suspend fun getPaginatedGenres(page:Int,pageSize:Int,search:String)  = api.getGenresPaginated(page, pageSize,search)
+
+    suspend fun getGenreDetails(id:Int)= try {
+        val response = api.getGenreDetails(id)
+        ApiMapper(ApiCallStatus.SUCCESS,response,null)
+    }catch (e:Exception) {
+        ApiMapper(ApiCallStatus.ERROR, null, e.toString())
+    }
 }

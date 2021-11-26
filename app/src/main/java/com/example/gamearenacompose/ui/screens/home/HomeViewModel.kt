@@ -3,6 +3,8 @@ package com.example.gamearenacompose.ui.screens.home
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.gamearenacompose.data.Prefs
+import com.example.gamearenacompose.data.remote.models.User
 import com.example.gamearenacompose.data.remote.models.games.GameList
 import com.example.gamearenacompose.data.remote.models.genre.GenreList
 import com.example.gamearenacompose.data.repositoy.GameRepository
@@ -14,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repo:GameRepository
+    private val repo:GameRepository,
+    private val prefs:Prefs
 ):ViewModel() {
     var isLoading = mutableStateOf(false)
     var error = mutableStateOf("")
@@ -57,6 +60,11 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun doLogin(email:String,pswd:String){
+        Timber.e("Current user ${ prefs.user}")
+        prefs.user = User(email,pswd)
     }
 
 

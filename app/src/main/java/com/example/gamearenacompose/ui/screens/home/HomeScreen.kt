@@ -1,6 +1,5 @@
 package com.example.gamearenacompose.ui.screens.home
 
-import android.icu.number.Scale
 import androidx.compose.animation.*
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
@@ -9,8 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -19,31 +16,21 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Password
-import androidx.compose.material.icons.filled.StarRate
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
-import androidx.compose.ui.Alignment.Companion.TopCenter
-import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
-import androidx.compose.ui.graphics.Color.Companion.Green
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.graphics.Color.Companion.Yellow
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
-import androidx.compose.ui.modifier.modifierLocalConsumer
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -56,21 +43,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.ActivityNavigator
 import androidx.navigation.NavController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
-import coil.request.ImageRequest
 import com.example.gamearenacompose.R
 import com.example.gamearenacompose.data.remote.models.games.GameList
 import com.example.gamearenacompose.data.remote.models.genre.GenreList
 import com.example.gamearenacompose.ui.GameArenaDestinations
-import com.example.gamearenacompose.ui.GameArenaNavigationActions
-import com.example.gamearenacompose.ui.theme.darkBLue
 import com.example.gamearenacompose.ui.theme.grey
 import com.example.gamearenacompose.ui.theme.lightPurple
 import com.example.gamearenacompose.ui.theme.purple
-import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 
@@ -122,7 +104,7 @@ fun HomeScreen(
             }
             item {
                 // RewardsCard()
-                AnimatedRewardCard()
+                AnimatedRewardCard(viewModel)
             }
             if (games.isNotEmpty()) {
                 item {
@@ -327,7 +309,7 @@ fun SearchBar(  //search view
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @Composable
-fun AnimatedRewardCard() {
+fun AnimatedRewardCard(viewModel: HomeViewModel) {
     var expanded by remember { mutableStateOf(false) }
     Surface(
         color = purple,
@@ -367,7 +349,7 @@ fun AnimatedRewardCard() {
             }
         ) { targetExpanded ->
             if (targetExpanded) {
-                RewardCardExpanded()
+                RewardCardExpanded(viewModel)
             } else {
                 RewardsCard()
             }
@@ -378,7 +360,7 @@ fun AnimatedRewardCard() {
 
 @Preview
 @Composable
-fun RewardCardExpanded() {
+fun RewardCardExpanded(viewModel: HomeViewModel) {
 
     var emailInput by remember {
         mutableStateOf("")
@@ -506,7 +488,7 @@ fun RewardCardExpanded() {
                 }
             )
 
-            Button(onClick = { /*TODO*/ },
+            Button(onClick = { onLoginClicked(emailInput, pswdInput, viewModel) },
                 elevation = ButtonDefaults.elevation(),
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
                 modifier = Modifier.constrainAs(login) {
@@ -527,6 +509,10 @@ fun RewardCardExpanded() {
         }
 
     }
+}
+
+fun onLoginClicked(emailInput: String, pswdInput: String, viewModel: HomeViewModel) {
+    viewModel.doLogin(emailInput, pswdInput)
 }
 
 @Preview

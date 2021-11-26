@@ -1,6 +1,8 @@
 package com.example.gamearenacompose.ui
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -14,6 +16,8 @@ import com.example.gamearenacompose.ui.screens.genre.GenreDetailsScreen
 import com.example.gamearenacompose.ui.screens.home.HomeScreen
 import com.google.accompanist.pager.ExperimentalPagerApi
 
+@ExperimentalMaterialApi
+@ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalPagerApi
 @Composable

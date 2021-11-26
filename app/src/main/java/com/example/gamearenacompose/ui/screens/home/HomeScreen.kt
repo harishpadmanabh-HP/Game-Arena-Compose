@@ -1,6 +1,9 @@
 package com.example.gamearenacompose.ui.screens.home
 
 import android.icu.number.Scale
+import androidx.compose.animation.*
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,10 +14,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Password
+import androidx.compose.material.icons.filled.StarRate
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -28,6 +33,10 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.Green
+import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.graphics.Color.Companion.Yellow
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
@@ -38,8 +47,11 @@ import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -62,6 +74,8 @@ import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 
+@ExperimentalMaterialApi
+@ExperimentalAnimationApi
 @ExperimentalPagerApi
 @Composable
 fun HomeScreen(
@@ -107,7 +121,8 @@ fun HomeScreen(
                 }
             }
             item {
-                RewardsCard()
+                // RewardsCard()
+                AnimatedRewardCard()
             }
             if (games.isNotEmpty()) {
                 item {
@@ -147,12 +162,6 @@ fun HeaderViews(modifier: Modifier = Modifier) {
                 .layoutId("txt_gme_arena")
                 .padding(start = 10.dp)
         )
-//        SearchBar(
-//            hint = "Search games...",
-//            modifier = Modifier
-//                .layoutId("search")
-//                .padding(top = 16.dp)
-//        )
     }
 }
 
@@ -315,13 +324,77 @@ fun SearchBar(  //search view
     }
 }
 
+@ExperimentalAnimationApi
+@ExperimentalMaterialApi
+@Composable
+fun AnimatedRewardCard() {
+    var expanded by remember { mutableStateOf(false) }
+    Surface(
+        color = purple,
+        modifier = Modifier
+            .padding()
+            .shadow(15.dp, RoundedCornerShape(15.dp))
+            .clip(RoundedCornerShape(15.dp))
+            .background(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(
+                        lightPurple, purple
+                    )
+                )
+            ),
+        onClick = { expanded = !expanded }// switch value of expanded state
+    ) {
+        AnimatedContent(
+            targetState = expanded,
+            transitionSpec = {
+                fadeIn(animationSpec = tween(150, 150)) with
+                        fadeOut(animationSpec = tween(150)) using
+                        SizeTransform { initialSize, targetSize ->
+                            if (targetState) {
+                                keyframes {
+                                    // Expand horizontally first.
+                                    IntSize(initialSize.width, targetSize.height) at 150
+                                    durationMillis = 500
+                                }
+                            } else {
+                                keyframes {
+                                    // Shrink vertically first.
+                                    IntSize(initialSize.width, targetSize.height) at 150
+                                    durationMillis = 500
+                                }
+                            }
+                        }
+            }
+        ) { targetExpanded ->
+            if (targetExpanded) {
+                RewardCardExpanded()
+            } else {
+                RewardsCard()
+            }
+        }
+
+    }
+}
+
 @Preview
 @Composable
-fun RewardsCard() {
+fun RewardCardExpanded() {
+
+    var emailInput by remember {
+        mutableStateOf("")
+    }
+
+    var pswdInput by remember {
+        mutableStateOf("")
+    }
+
+
+
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp)
+            .wrapContentHeight()
             .padding(top = 14.dp)
             .shadow(15.dp, RoundedCornerShape(15.dp))
             .clip(RoundedCornerShape(15.dp))
@@ -332,6 +405,139 @@ fun RewardsCard() {
                     )
                 )
             )
+    ) {
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(purple)
+        ) {
+            val (heading, desc, email, pswd, login) = createRefs()
+            Text(
+                modifier = Modifier
+                    .wrapContentSize(TopStart)
+                    .constrainAs(heading) {
+                        top.linkTo(parent.top, margin = 16.dp)
+                        start.linkTo(parent.start, margin = 16.dp)
+
+                    },
+                text = "Get your Rewards!",
+                color = Color.White,
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontFamily = FontFamily(Font(R.font.montserrat_semibold))
+                )
+            )
+
+            Text(
+                modifier = Modifier
+                    .padding(top = 12.dp, start = 18.dp)
+                    .constrainAs(desc) {
+                        top.linkTo(heading.bottom)
+                        start.linkTo(parent.start)
+                    },
+                text = "Claim daily login rewads.",
+                color = Color.White,
+                style = TextStyle(
+                    fontSize = 12.sp,
+                    fontFamily = FontFamily(Font(R.font.montserrat_regular))
+                )
+            )
+
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp, start = 18.dp, end = 18.dp)
+                    .constrainAs(email) {
+                        top.linkTo(desc.bottom)
+                        start.linkTo(parent.start)
+                    },
+                value = emailInput,
+                onValueChange = {
+                    emailInput = it
+                },
+
+                label = { Text("Email") },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    backgroundColor = purple,
+                    focusedBorderColor = White,
+                    unfocusedBorderColor = Black,
+                    textColor = Black,
+                    focusedLabelColor = Black,
+                    unfocusedLabelColor = Black
+                ),
+                maxLines = 1,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Email,
+                        contentDescription = null
+                    )
+                },
+
+                )
+
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp, start = 18.dp, end = 18.dp)
+                    .constrainAs(pswd) {
+                        top.linkTo(email.bottom)
+                        start.linkTo(parent.start)
+                    },
+                value = pswdInput,
+                onValueChange = { pswdInput = it },
+                label = { Text("Password") },
+                maxLines = 1,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    backgroundColor = purple,
+                    focusedBorderColor = White,
+                    unfocusedBorderColor = Black,
+                    textColor = Black,
+                    focusedLabelColor = Black,
+                    unfocusedLabelColor = Black
+                ),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                visualTransformation = PasswordVisualTransformation(),
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Password,
+                        contentDescription = null
+                    )
+                }
+            )
+
+            Button(onClick = { /*TODO*/ },
+                elevation = ButtonDefaults.elevation(),
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
+                modifier = Modifier.constrainAs(login) {
+                    end.linkTo(pswd.end, margin = 20.dp)
+                    top.linkTo(pswd.bottom)
+                    bottom.linkTo(parent.bottom, 20.dp)
+                }
+            ) {
+                Text(
+                    text = "LOGIN",
+                    color = White,
+                    style = TextStyle(
+                        fontFamily = FontFamily(Font(R.font.montserrat_medium)),
+                        fontSize = 16.sp
+                    )
+                )
+            }
+        }
+
+    }
+}
+
+@Preview
+@Composable
+fun RewardsCard() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp)
+            .padding(top = 14.dp)
+
     ) {
         ConstraintLayout(modifier = Modifier.fillMaxSize()) {
             val (rewardImg, heading, desc) = createRefs()
@@ -488,3 +694,26 @@ fun GameItem(
 
     }
 }
+//
+//@Composable
+//fun OutlinedTextField(modifier: Modifier=Modifier) {
+//    var text by remember {
+//        mutableStateOf("")
+//    }
+//    Scaffold() {
+//        Box(modifier = Modifier
+//            .padding(horizontal = 16.dp)) {
+//            OutlinedTextField(
+//                modifier = Modifier.fillMaxWidth(),
+//                value = text,
+//                onValueChange = { text = it },
+//                label = { Text("Email") },
+//                colors = TextFieldDefaults.outlinedTextFieldColors(
+//                    textColor = Color.White,
+//                    focusedBorderColor = Color.White,
+//                    unfocusedBorderColor = Color.Black,
+//                backgroundColor = purple)
+//            )
+//        }
+//    }
+//}
